@@ -24,8 +24,8 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:https://github.com/BitWeb/montonio-java-sdk.git'
-                    developerConnection = 'scm:git@github.com:BitWeb/montonio-java-sdk.git'
+                    connection = 'scm:git:https://github.com/BitWeb/montonio-java-sdk.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/BitWeb/montonio-java-sdk.git'
                     url = 'https://github.com/BitWeb/montonio-java-sdk'
                 }
             }
@@ -35,7 +35,7 @@ publishing {
 
 nexusPublishing {
     repositories {
-        if (project.hasProperty('mavenCentralUsername') & project.hasProperty('mavenCentralPassword')) {
+        if (project.hasProperty('mavenCentralUsername') && project.hasProperty('mavenCentralPassword')) {
             sonatype {
                 nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
                 snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
@@ -47,10 +47,10 @@ nexusPublishing {
 }
 
 signing {
-    if (project.hasProperty("signingKey") & project.hasProperty("signingPassword")) {
+    if (project.hasProperty("signingKey") && project.hasProperty("signingPassword")) {
         useInMemoryPgpKeys(project.signingKey, project.signingPassword)
+        sign publishing.publications.mavenJava
     }
-    sign publishing.publications.mavenJava
 }
 
 javadoc {

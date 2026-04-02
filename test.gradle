@@ -34,7 +34,9 @@ tasks.register('jacocoIntegrationTestReport', JacocoReport) {
     }
 }
 
-tasks.register('testAndReport', Test) {
+tasks.register('testAndReport') {
+    group = "verification"
+    description = "Runs unit and integration tests with coverage reports"
     tasks.getByName('integrationTest').mustRunAfter('unitTest')
     dependsOn('unitTest', 'integrationTest', 'jacocoUnitTestReport', 'jacocoIntegrationTestReport')
 }
