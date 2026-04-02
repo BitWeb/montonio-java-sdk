@@ -1,0 +1,35 @@
+buildscript {
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle'
+    }
+}
+
+plugins {
+    id 'java'
+    id "org.owasp.dependencycheck" version "12.2.0"
+    id "io.freefair.lombok" version "9.2.0"
+    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+}
+
+group 'ee.bitweb'
+version '0.1.0'
+java {
+    sourceCompatibility = '17'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
+
+apply from: "test.gradle"
+apply from: "library.gradle"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.12.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}

@@ -1,0 +1,64 @@
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'montonio-sdk'
+            from components.java
+            pom {
+                name = 'Montonio Java SDK'
+                description = 'Montonio Payment Gateway Java SDK'
+                url = 'https://github.com/BitWeb/montonio-java-sdk'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/BitWeb/montonio-java-sdk/blob/main/LICENSE'
+                    }
+                }
+                scm {
+                    connection = 'scm:https://github.com/BitWeb/montonio-java-sdk.git'
+                    developerConnection = 'scm:git@github.com:BitWeb/montonio-java-sdk.git'
+                    url = 'https://github.com/BitWeb/montonio-java-sdk'
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        if (project.hasProperty('mavenCentralUsername') & project.hasProperty('mavenCentralPassword')) {
+            sonatype {
+                nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+                username = project.mavenCentralUsername
+                password = project.mavenCentralPassword
+            }
+        }
+    }
+}
+
+signing {
+    if (project.hasProperty("signingKey") & project.hasProperty("signingPassword")) {
+        useInMemoryPgpKeys(project.signingKey, project.signingPassword)
+    }
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+jar {
+    from sourceSets.main.allSource
+}
