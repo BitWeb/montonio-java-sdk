@@ -1,0 +1,42 @@
+apply plugin: 'jacoco'
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('unitTest', Test) {
+    group("verification")
+    useJUnitPlatform {
+        excludeTags "integration"
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    group("verification")
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+}
+
+tasks.register('jacocoUnitTestReport', JacocoReport) {
+    sourceSets sourceSets.main
+    executionData unitTest
+    reports {
+        xml.required = true
+    }
+}
+
+tasks.register('jacocoIntegrationTestReport', JacocoReport) {
+    sourceSets sourceSets.main
+    executionData integrationTest
+    reports {
+        xml.required = true
+    }
+}
+
+tasks.register('testAndReport') {
+    group = "verification"
+    description = "Runs unit and integration tests with coverage reports"
+    tasks.getByName('integrationTest').mustRunAfter('unitTest')
+    dependsOn('unitTest', 'integrationTest', 'jacocoUnitTestReport', 'jacocoIntegrationTestReport')
+}
