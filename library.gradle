@@ -23,6 +23,12 @@ publishing {
                         url = 'https://github.com/BitWeb/montonio-java-sdk/blob/main/LICENSE'
                     }
                 }
+                developers {
+                    developer {
+                        id = 'rainramm'
+                        name = 'Rain Ramm'
+                    }
+                }
                 scm {
                     connection = 'scm:git:https://github.com/BitWeb/montonio-java-sdk.git'
                     developerConnection = 'scm:git:ssh://git@github.com/BitWeb/montonio-java-sdk.git'
@@ -59,6 +65,3 @@ javadoc {
     }
 }
 
-jar {
-    from sourceSets.main.allSource
-}
