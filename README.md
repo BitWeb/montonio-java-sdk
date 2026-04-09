@@ -11,7 +11,7 @@ A type-safe Java client for the [Montonio](https://montonio.com) payment gateway
 
 ### Using a Devcontainer (recommended)
 
-The project includes a [devcontainer](.devcontainer/devcontainer.json) configuration with Java 17, Gradle, and GitHub CLI pre-installed. Open the project in any devcontainer-compatible tool:
+The project includes a [devcontainer](.devcontainer/devcontainer.json) configuration with Java 17, Gradle via the wrapper (`./gradlew`), and GitHub CLI. Open the project in any devcontainer-compatible tool:
 
 - **VS Code** — install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension, then _Reopen in Container_
 - **IntelliJ IDEA** — open the project and follow the [Dev Containers integration](https://www.jetbrains.com/help/idea/connect-to-devcontainer.html) guide
