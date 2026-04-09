@@ -5,5 +5,9 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/node:1": {}
   },
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && echo 'alias yolo=\"claude --dangerously-skip-permissions\"' >> ~/.bashrc && ./gradlew dependencies --no-daemon"
+  "mounts": [
+    "source=montonio-sdk-claude-settings,target=/home/vscode/.claude,type=volume"
+  ],
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/gh-auth.sh"
 }
