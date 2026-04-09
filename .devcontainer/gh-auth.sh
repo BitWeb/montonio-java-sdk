@@ -16,6 +16,12 @@ if [ ! -f "$TOKEN_FILE" ]; then
   exit 0
 fi
 
+TOKEN_PERMS="$(stat -c '%a' "$TOKEN_FILE" 2>/dev/null || stat -f '%Lp' "$TOKEN_FILE")"
+if [ "$TOKEN_PERMS" != "600" ]; then
+  echo "WARNING: $TOKEN_FILE permissions are $TOKEN_PERMS; fixing to 600."
+  chmod 600 "$TOKEN_FILE"
+fi
+
 TOKEN=$(cat "$TOKEN_FILE" | tr -d '[:space:]')
 
 if [ -z "$TOKEN" ]; then
@@ -23,6 +29,15 @@ if [ -z "$TOKEN" ]; then
   exit 0
 fi
 
-echo "$TOKEN" | gh auth login --with-token
-gh auth setup-git
+if gh auth status >/dev/null 2>&1; then
+  echo "GitHub CLI already authenticated."
+  exit 0
+fi
+
+if ! printf '%s\n' "$TOKEN" | gh auth login --with-token; then
+  echo "WARNING: GitHub CLI authentication failed. Continuing without gh auth."
+  exit 0
+fi
+
+gh auth setup-git || echo "WARNING: Failed to configure git credential helper via gh."
 echo "GitHub CLI authenticated and git credentials configured."

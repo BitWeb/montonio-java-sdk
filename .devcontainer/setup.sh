@@ -8,7 +8,8 @@ echo "==> Installing Claude Code CLI..."
 npm install -g @anthropic-ai/claude-code
 
 echo "==> Configuring shell aliases..."
-echo 'alias yolo="claude --dangerously-skip-permissions"' >> ~/.bashrc
+grep -qxF 'alias yolo="claude --dangerously-skip-permissions"' ~/.bashrc || \
+  echo 'alias yolo="claude --dangerously-skip-permissions"' >> ~/.bashrc
 
 echo "==> Pre-warming Gradle dependency cache..."
 ./gradlew dependencies --no-daemon
