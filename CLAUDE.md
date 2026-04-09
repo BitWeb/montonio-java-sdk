@@ -19,6 +19,10 @@ Requires Java 17 (managed via `.sdkmanrc`). Uses Gradle 9.4.1 with Groovy DSL.
 ./gradlew test --tests 'com.example.MyTest.myMethod'  # single test
 ```
 
+## Devcontainer
+
+A devcontainer configuration is provided in `.devcontainer/devcontainer.json`. It includes Java 17 (Temurin), Gradle (via wrapper), and GitHub CLI. Open the project in any devcontainer-compatible tool (VS Code, IntelliJ, GitHub Codespaces, Claude Code) to get a ready-to-use environment.
+
 ## Gradle Structure
 
 Build is split across files following BitWeb conventions:
