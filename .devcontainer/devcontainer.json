@@ -2,7 +2,8 @@
   "name": "Montonio Java SDK",
   "image": "mcr.microsoft.com/devcontainers/java:17",
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
   },
-  "postCreateCommand": "echo 'alias yolo=\"claude --dangerously-skip-permissions\"' >> ~/.bashrc && ./gradlew dependencies --no-daemon"
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && echo 'alias yolo=\"claude --dangerously-skip-permissions\"' >> ~/.bashrc && ./gradlew dependencies --no-daemon"
 }
