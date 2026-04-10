@@ -98,6 +98,34 @@ class PaymentTest {
     }
 
     @Test
+    void buildWithZeroAmountThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> Payment.builder()
+                        .method(PaymentMethodType.CARD_PAYMENTS)
+                        .currency(Currency.EUR)
+                        .amount(BigDecimal.ZERO)
+                        .build()
+        );
+
+        assertEquals("amount", exception.getField());
+    }
+
+    @Test
+    void buildWithNegativeAmountThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> Payment.builder()
+                        .method(PaymentMethodType.CARD_PAYMENTS)
+                        .currency(Currency.EUR)
+                        .amount(new BigDecimal("-1"))
+                        .build()
+        );
+
+        assertEquals("amount", exception.getField());
+    }
+
+    @Test
     void serializationRoundTrip() throws Exception {
         Payment payment = Payment.builder()
                 .method(PaymentMethodType.CARD_PAYMENTS)

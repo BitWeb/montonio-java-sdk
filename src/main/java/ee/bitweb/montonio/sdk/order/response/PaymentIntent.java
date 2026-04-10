@@ -44,6 +44,6 @@ public final class PaymentIntent {
         this.serviceFee = serviceFee;
         this.serviceFeeCurrency = serviceFeeCurrency;
         this.createdAt = createdAt;
-        this.paymentMethodMetadata = paymentMethodMetadata;
+        this.paymentMethodMetadata = paymentMethodMetadata == null ? null : Map.copyOf(paymentMethodMetadata);
     }
 }

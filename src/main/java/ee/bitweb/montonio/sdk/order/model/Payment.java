@@ -41,6 +41,9 @@ public class Payment {
         if (amount == null) {
             throw new MontonioValidationException("amount", "must not be null");
         }
+        if (amount.signum() <= 0) {
+            throw new MontonioValidationException("amount", "must be greater than zero");
+        }
         this.method = method;
         this.currency = currency;
         this.amount = amount;

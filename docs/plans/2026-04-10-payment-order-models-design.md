@@ -23,7 +23,7 @@ Field definitions were derived by cross-referencing:
 
 ### Package layout — feature-based
 
-```
+```text
 ee.bitweb.montonio.sdk.model/           — shared enums (Currency, Locale, etc.)
 ee.bitweb.montonio.sdk.order.model/     — order-scoped models and enums
 ee.bitweb.montonio.sdk.order.request/   — request DTOs

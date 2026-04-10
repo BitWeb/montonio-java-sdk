@@ -74,8 +74,8 @@ public final class OrderResponse {
         this.currency = currency;
         this.paymentMethodType = paymentMethodType;
         this.storeUuid = storeUuid;
-        this.paymentIntents = paymentIntents;
-        this.lineItems = lineItems;
+        this.paymentIntents = paymentIntents == null ? null : List.copyOf(paymentIntents);
+        this.lineItems = lineItems == null ? null : List.copyOf(lineItems);
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;
         this.expiresAt = expiresAt;

@@ -77,6 +77,6 @@ public class CreateOrderRequest {
         this.locale = locale;
         this.billingAddress = billingAddress;
         this.shippingAddress = shippingAddress;
-        this.lineItems = lineItems;
+        this.lineItems = lineItems == null ? null : List.copyOf(lineItems);
     }
 }
