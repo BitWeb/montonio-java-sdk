@@ -15,7 +15,7 @@ Multi-merchant support is intentionally deferred — consumers who need multiple
 | Decision                   | Choice                                       | Rationale                                                                       |
 |----------------------------|----------------------------------------------|---------------------------------------------------------------------------------|
 | Multi-merchant approach    | Multiple instances, no built-in registry     | YAGNI; consumers manage their own instances                                     |
-| Environment selection      | Base URL string + constants                  | Simple, flexible; enum wrapper adds little value for a rarely-changed URL       |
+| Environment selection      | Base URL string + constants                  | Simple, flexible; enum wrapper adds little value for a rarely changed URL       |
 | Timeout granularity        | Connect + request (two fields)               | Matches `java.net.http.HttpClient` natively; no separate write timeout needed   |
 | Timeout type               | `java.time.Duration`                         | Idiomatic, self-documenting units, native HttpClient compatibility              |
 | Construction               | Lombok `@Builder` with custom `build()`      | Fluent API, immutable result, validation at construction time                   |
