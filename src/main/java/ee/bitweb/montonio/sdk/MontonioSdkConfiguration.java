@@ -42,6 +42,18 @@ public class MontonioSdkConfiguration {
         if (secretKey == null || secretKey.isBlank()) {
             throw new MontonioValidationException("secretKey", "must not be null or blank");
         }
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new MontonioValidationException("baseUrl", "must not be null or blank");
+        }
+        if (connectTimeout == null) {
+            throw new MontonioValidationException("connectTimeout", "must not be null");
+        }
+        if (requestTimeout == null) {
+            throw new MontonioValidationException("requestTimeout", "must not be null");
+        }
+        if (tokenExpirationTime == null) {
+            throw new MontonioValidationException("tokenExpirationTime", "must not be null");
+        }
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.baseUrl = baseUrl;

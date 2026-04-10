@@ -103,4 +103,60 @@ class MontonioSdkConfigurationTest {
 
         assertEquals("secretKey", exception.getField());
     }
+
+    @Test
+    void buildWithNullBaseUrlThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .baseUrl(null)
+                        .build()
+        );
+
+        assertEquals("baseUrl", exception.getField());
+    }
+
+    @Test
+    void buildWithNullConnectTimeoutThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .connectTimeout(null)
+                        .build()
+        );
+
+        assertEquals("connectTimeout", exception.getField());
+    }
+
+    @Test
+    void buildWithNullRequestTimeoutThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .requestTimeout(null)
+                        .build()
+        );
+
+        assertEquals("requestTimeout", exception.getField());
+    }
+
+    @Test
+    void buildWithNullTokenExpirationTimeThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .tokenExpirationTime(null)
+                        .build()
+        );
+
+        assertEquals("tokenExpirationTime", exception.getField());
+    }
 }
