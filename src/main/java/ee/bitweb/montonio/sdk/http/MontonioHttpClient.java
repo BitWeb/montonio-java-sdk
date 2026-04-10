@@ -40,8 +40,8 @@ public class MontonioHttpClient {
         this.tokenProvider = new MontonioTokenProvider(configuration, objectMapper);
     }
 
-    MontonioHttpClient(MontonioSdkConfiguration configuration, HttpClient httpClient,
-                       MontonioTokenProvider tokenProvider) {
+    public MontonioHttpClient(MontonioSdkConfiguration configuration, HttpClient httpClient,
+                              MontonioTokenProvider tokenProvider) {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.objectMapper = createObjectMapper();
