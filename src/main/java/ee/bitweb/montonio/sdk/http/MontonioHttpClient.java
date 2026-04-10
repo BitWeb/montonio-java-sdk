@@ -1,6 +1,7 @@
 package ee.bitweb.montonio.sdk.http;
 
 import ee.bitweb.montonio.sdk.MontonioSdkConfiguration;
+import ee.bitweb.montonio.sdk.auth.MontonioTokenProvider;
 import ee.bitweb.montonio.sdk.exception.MontonioApiException;
 import ee.bitweb.montonio.sdk.exception.MontonioException;
 import ee.bitweb.montonio.sdk.exception.MontonioNetworkException;
@@ -14,12 +15,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 public class MontonioHttpClient {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final MontonioSdkConfiguration configuration;
+    private final MontonioTokenProvider tokenProvider;
 
     public MontonioHttpClient(MontonioSdkConfiguration configuration) {
         this(
@@ -36,10 +39,22 @@ public class MontonioHttpClient {
         this.objectMapper = JsonMapper.builder()
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
+        this.tokenProvider = new MontonioTokenProvider(configuration, objectMapper);
+    }
+
+    MontonioHttpClient(MontonioSdkConfiguration configuration, HttpClient httpClient,
+                       MontonioTokenProvider tokenProvider) {
+        this.configuration = configuration;
+        this.httpClient = httpClient;
+        this.objectMapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .build();
+        this.tokenProvider = tokenProvider;
     }
 
     public <T> T get(String path, Class<T> responseType) {
         HttpRequest request = newRequestBuilder(path)
+                .header("Authorization", "Bearer " + tokenProvider.getAuthToken())
                 .GET()
                 .build();
 
@@ -47,7 +62,8 @@ public class MontonioHttpClient {
     }
 
     public <T> T post(String path, Object body, Class<T> responseType) {
-        String json = serialize(body);
+        String token = tokenProvider.getDataToken(body);
+        String json = serialize(Map.of("data", token));
 
         HttpRequest request = newRequestBuilder(path)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
