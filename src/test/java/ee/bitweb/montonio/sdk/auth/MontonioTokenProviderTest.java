@@ -303,6 +303,7 @@ class MontonioTokenProviderTest {
         startLatch.countDown();
         doneLatch.await();
         executor.shutdown();
+        assertTrue(executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS));
 
         assertTrue(errors.isEmpty(), "Concurrent access produced errors: " + errors);
         assertEquals(threadCount, tokens.size());

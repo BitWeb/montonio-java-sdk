@@ -129,7 +129,7 @@ No retry logic — these are local CPU operations, so failure indicates a config
 
 - `synchronized(this)` guards all reads/writes to `cachedToken` and `cachedTokenExpiry`
 - Token generation (HMAC-SHA256) takes microseconds, so lock contention is negligible
-- `getDataToken()` does not touch cached state, so it only synchronizes if sharing mutable resources
+- `getDataToken()` requires no synchronisation as it does not access shared state
 
 ## Testing Strategy
 

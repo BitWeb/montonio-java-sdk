@@ -36,9 +36,7 @@ public class MontonioHttpClient {
     MontonioHttpClient(MontonioSdkConfiguration configuration, HttpClient httpClient) {
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.objectMapper = JsonMapper.builder()
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .build();
+        this.objectMapper = createObjectMapper();
         this.tokenProvider = new MontonioTokenProvider(configuration, objectMapper);
     }
 
@@ -46,10 +44,14 @@ public class MontonioHttpClient {
                        MontonioTokenProvider tokenProvider) {
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.objectMapper = JsonMapper.builder()
+        this.objectMapper = createObjectMapper();
+        this.tokenProvider = tokenProvider;
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        return JsonMapper.builder()
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
-        this.tokenProvider = tokenProvider;
     }
 
     public <T> T get(String path, Class<T> responseType) {
