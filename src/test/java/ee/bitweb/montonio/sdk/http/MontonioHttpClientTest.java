@@ -1,11 +1,18 @@
 package ee.bitweb.montonio.sdk.http;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import ee.bitweb.montonio.sdk.MontonioSdkConfiguration;
+import ee.bitweb.montonio.sdk.auth.MontonioTokenProvider;
 import ee.bitweb.montonio.sdk.exception.MontonioApiException;
 import ee.bitweb.montonio.sdk.exception.MontonioException;
 import ee.bitweb.montonio.sdk.exception.MontonioNetworkException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.net.ssl.SSLSession;
 import java.io.IOException;
@@ -14,7 +21,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,24 +34,36 @@ import static org.junit.jupiter.api.Assertions.*;
 class MontonioHttpClientTest {
 
     private static final String BASE_URL = "https://api.example.com";
+    private static final String ACCESS_KEY = "test-access-key";
+    private static final String SECRET_KEY = "test-secret-key-that-is-long-enough";
+    private static final Instant FIXED_NOW = Instant.parse("2026-01-15T10:00:00Z");
 
     private MontonioSdkConfiguration configuration;
+    private MontonioTokenProvider tokenProvider;
 
     @BeforeEach
     void setUp() {
         configuration = MontonioSdkConfiguration.builder()
-                .accessKey("test-access-key")
-                .secretKey("test-secret-key")
+                .accessKey(ACCESS_KEY)
+                .secretKey(SECRET_KEY)
                 .baseUrl(BASE_URL)
                 .connectTimeout(Duration.ofSeconds(5))
                 .requestTimeout(Duration.ofSeconds(10))
                 .build();
+
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .build();
+
+        tokenProvider = new MontonioTokenProvider(
+                configuration, objectMapper, Clock.fixed(FIXED_NOW, ZoneOffset.UTC)
+        );
     }
 
     @Test
     void getDeserializesSuccessfulResponse() {
         HttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":42}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         TestResponse response = client.get("/test", TestResponse.class);
 
@@ -52,7 +74,7 @@ class MontonioHttpClientTest {
     @Test
     void getBuildsCorrectUri() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         client.get("/orders/123", TestResponse.class);
 
@@ -62,7 +84,7 @@ class MontonioHttpClientTest {
     @Test
     void getSetsJsonHeaders() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         client.get("/test", TestResponse.class);
 
@@ -72,9 +94,42 @@ class MontonioHttpClientTest {
     }
 
     @Test
+    void getSetsBearerAuthorizationHeader() {
+        StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
+
+        client.get("/test", TestResponse.class);
+
+        HttpHeaders headers = stubClient.capturedRequest.headers();
+        List<String> authHeaders = headers.allValues("Authorization");
+        assertEquals(1, authHeaders.size());
+        assertTrue(authHeaders.get(0).startsWith("Bearer "));
+
+        // Verify the JWT in the header
+        String jwt = authHeaders.get(0).substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+        DecodedJWT decoded = JWT.require(algorithm)
+                .acceptExpiresAt(365 * 24 * 3600)
+                .build()
+                .verify(jwt);
+        assertEquals(ACCESS_KEY, decoded.getClaim("accessKey").asString());
+    }
+
+    @Test
+    void postDoesNotSetAuthorizationHeader() {
+        StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
+
+        client.post("/test", new TestRequest("hello"), TestResponse.class);
+
+        HttpHeaders headers = stubClient.capturedRequest.headers();
+        assertTrue(headers.allValues("Authorization").isEmpty());
+    }
+
+    @Test
     void getSetsRequestTimeout() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         client.get("/test", TestResponse.class);
 
@@ -87,7 +142,7 @@ class MontonioHttpClientTest {
     @Test
     void getUsesGetMethod() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         client.get("/test", TestResponse.class);
 
@@ -95,21 +150,34 @@ class MontonioHttpClientTest {
     }
 
     @Test
-    void postSerializesBodyAndDeserializesResponse() {
+    void postWrapsBodyAsJwtInDataField() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"created\",\"value\":99}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         TestResponse response = client.post("/test", new TestRequest("hello"), TestResponse.class);
 
         assertEquals("created", response.name);
         assertEquals(99, response.value);
-        assertEquals("{\"data\":\"hello\"}", extractRequestBody(stubClient.capturedRequest));
+
+        String requestBody = extractRequestBody(stubClient.capturedRequest);
+        assertTrue(requestBody.startsWith("{\"data\":\""), "POST body should be {\"data\":\"<jwt>\"}");
+        assertTrue(requestBody.endsWith("\"}"), "POST body should end with \"}");
+
+        // Extract and verify the JWT
+        String jwt = requestBody.substring("{\"data\":\"".length(), requestBody.length() - 2);
+        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+        DecodedJWT decoded = JWT.require(algorithm)
+                .acceptExpiresAt(365 * 24 * 3600)
+                .build()
+                .verify(jwt);
+        assertEquals(ACCESS_KEY, decoded.getClaim("accessKey").asString());
+        assertEquals("hello", decoded.getClaim("data").asString());
     }
 
     @Test
     void postUsesPostMethod() {
         StubHttpClient stubClient = new StubHttpClient(200, "{\"name\":\"test\",\"value\":1}");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         client.post("/test", new TestRequest("hello"), TestResponse.class);
 
@@ -120,7 +188,7 @@ class MontonioHttpClientTest {
     void errorResponseWithJsonBodyThrowsApiExceptionWithParsedFields() {
         String errorBody = "{\"errorCode\":\"ORDER_NOT_FOUND\",\"message\":\"Order does not exist\"}";
         HttpClient stubClient = new StubHttpClient(404, errorBody);
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioApiException exception = assertThrows(
                 MontonioApiException.class,
@@ -135,7 +203,7 @@ class MontonioHttpClientTest {
     @Test
     void errorResponseWithNonJsonBodyThrowsApiExceptionWithRawBody() {
         HttpClient stubClient = new StubHttpClient(500, "Internal Server Error");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioApiException exception = assertThrows(
                 MontonioApiException.class,
@@ -151,7 +219,7 @@ class MontonioHttpClientTest {
     void errorResponseWithPartialJsonFieldsThrowsApiExceptionWithAvailableFields() {
         String errorBody = "{\"message\":\"Something went wrong\"}";
         HttpClient stubClient = new StubHttpClient(400, errorBody);
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioApiException exception = assertThrows(
                 MontonioApiException.class,
@@ -166,7 +234,7 @@ class MontonioHttpClientTest {
     @Test
     void connectionFailureThrowsNetworkException() {
         HttpClient stubClient = new IoExceptionHttpClient(new IOException("Connection refused"));
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioNetworkException exception = assertThrows(
                 MontonioNetworkException.class,
@@ -180,7 +248,7 @@ class MontonioHttpClientTest {
     @Test
     void interruptedRequestThrowsNetworkExceptionAndRestoresInterruptFlag() {
         HttpClient stubClient = new InterruptedHttpClient();
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioNetworkException exception = assertThrows(
                 MontonioNetworkException.class,
@@ -198,7 +266,7 @@ class MontonioHttpClientTest {
     @Test
     void malformedJsonResponseOnSuccessThrowsMontonioException() {
         HttpClient stubClient = new StubHttpClient(200, "not json at all");
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioException exception = assertThrows(
                 MontonioException.class,
@@ -212,7 +280,7 @@ class MontonioHttpClientTest {
     void errorResponseWithNullJsonFieldsThrowsApiExceptionWithNulls() {
         String errorBody = "{\"errorCode\":null,\"message\":null}";
         HttpClient stubClient = new StubHttpClient(422, errorBody);
-        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient);
+        MontonioHttpClient client = new MontonioHttpClient(configuration, stubClient, tokenProvider);
 
         MontonioApiException exception = assertThrows(
                 MontonioApiException.class,
