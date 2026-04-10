@@ -40,7 +40,7 @@ dependencies {
 sonar {
     properties {
         property "sonar.projectKey", "BitWeb_montonio-java-sdk"
-        property "sonar.organization", "bitweb_oss"
+        property "sonar.organization", "bitweb-oss"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.coverage.jacoco.xmlReportPaths",
                 "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml"
