@@ -4,6 +4,7 @@ import ee.bitweb.montonio.sdk.MontonioSdkConfiguration;
 import ee.bitweb.montonio.sdk.exception.MontonioApiException;
 import ee.bitweb.montonio.sdk.exception.MontonioException;
 import ee.bitweb.montonio.sdk.exception.MontonioNetworkException;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -33,7 +34,7 @@ public class MontonioHttpClient {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.objectMapper = JsonMapper.builder()
-                .disable(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
     }
 
