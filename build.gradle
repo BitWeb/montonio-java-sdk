@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
     implementation 'tools.jackson.core:jackson-databind:3.0.1'
+    implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 
     testImplementation platform('org.junit:junit-bom:5.14.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
