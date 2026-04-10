@@ -9,6 +9,9 @@ public class OrderService {
     private final MontonioHttpClient httpClient;
 
     public OrderService(MontonioHttpClient httpClient) {
+        if (httpClient == null) {
+            throw new NullPointerException("httpClient must not be null");
+        }
         this.httpClient = httpClient;
     }
 

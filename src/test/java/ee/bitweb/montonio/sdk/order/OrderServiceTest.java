@@ -121,7 +121,13 @@ class OrderServiceTest {
     void getWithEmptyUuidThrowsValidationException() {
         OrderService service = createServiceWithStub(200, "{}");
 
-        assertThrows(MontonioValidationException.class, () -> service.get(""));
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> service.get("")
+        );
+
+        assertEquals("uuid", exception.getField());
+        assertTrue(exception.getMessage().contains("must not be null or blank"));
     }
 
     @Test

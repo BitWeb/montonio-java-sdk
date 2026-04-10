@@ -16,6 +16,9 @@ public class MontonioClient {
     }
 
     MontonioClient(MontonioHttpClient httpClient) {
+        if (httpClient == null) {
+            throw new NullPointerException("httpClient must not be null");
+        }
         this.httpClient = httpClient;
     }
 
