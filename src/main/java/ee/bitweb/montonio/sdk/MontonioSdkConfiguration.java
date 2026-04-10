@@ -45,14 +45,14 @@ public class MontonioSdkConfiguration {
         if (baseUrl == null || baseUrl.isBlank()) {
             throw new MontonioValidationException("baseUrl", "must not be null or blank");
         }
-        if (connectTimeout == null) {
-            throw new MontonioValidationException("connectTimeout", "must not be null");
+        if (connectTimeout == null || connectTimeout.isNegative()) {
+            throw new MontonioValidationException("connectTimeout", "must not be null or negative");
         }
-        if (requestTimeout == null) {
-            throw new MontonioValidationException("requestTimeout", "must not be null");
+        if (requestTimeout == null || requestTimeout.isNegative()) {
+            throw new MontonioValidationException("requestTimeout", "must not be null or negative");
         }
-        if (tokenExpirationTime == null) {
-            throw new MontonioValidationException("tokenExpirationTime", "must not be null");
+        if (tokenExpirationTime == null || tokenExpirationTime.isNegative()) {
+            throw new MontonioValidationException("tokenExpirationTime", "must not be null or negative");
         }
         this.accessKey = accessKey;
         this.secretKey = secretKey;

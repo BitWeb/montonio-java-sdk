@@ -159,4 +159,46 @@ class MontonioSdkConfigurationTest {
 
         assertEquals("tokenExpirationTime", exception.getField());
     }
+
+    @Test
+    void buildWithNegativeConnectTimeoutThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .connectTimeout(Duration.ofSeconds(-1))
+                        .build()
+        );
+
+        assertEquals("connectTimeout", exception.getField());
+    }
+
+    @Test
+    void buildWithNegativeRequestTimeoutThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .requestTimeout(Duration.ofSeconds(-1))
+                        .build()
+        );
+
+        assertEquals("requestTimeout", exception.getField());
+    }
+
+    @Test
+    void buildWithNegativeTokenExpirationTimeThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> MontonioSdkConfiguration.builder()
+                        .accessKey("test-access-key")
+                        .secretKey("test-secret-key")
+                        .tokenExpirationTime(Duration.ofSeconds(-1))
+                        .build()
+        );
+
+        assertEquals("tokenExpirationTime", exception.getField());
+    }
 }
