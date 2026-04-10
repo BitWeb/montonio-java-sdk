@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class MontonioValidationExceptionTest {
 
@@ -21,6 +22,28 @@ class MontonioValidationExceptionTest {
 
         assertNull(exception.getField());
         assertEquals("Validation failed: at least one line item is required", exception.getMessage());
+    }
+
+    @Test
+    void constructWithFieldMessageAndCause() {
+        Throwable cause = new NumberFormatException("not a number");
+
+        MontonioValidationException exception = new MontonioValidationException("amount", "must be a valid number", cause);
+
+        assertEquals("amount", exception.getField());
+        assertEquals("Validation failed on field 'amount': must be a valid number", exception.getMessage());
+        assertSame(cause, exception.getCause());
+    }
+
+    @Test
+    void constructWithMessageAndCause() {
+        Throwable cause = new IllegalArgumentException("parse error");
+
+        MontonioValidationException exception = new MontonioValidationException("invalid payload", cause);
+
+        assertNull(exception.getField());
+        assertEquals("Validation failed: invalid payload", exception.getMessage());
+        assertSame(cause, exception.getCause());
     }
 
     @Test

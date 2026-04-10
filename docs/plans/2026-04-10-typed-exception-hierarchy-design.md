@@ -18,11 +18,11 @@ Define a structured exception hierarchy to distinguish between different failure
 | Checked vs unchecked      | All unchecked (RuntimeException)            | Modern Java convention; avoids polluting consumer code                         |
 | Auth exception placement  | Sibling of MontonioApiException             | Auth errors warrant fundamentally different handling than generic API errors   |
 | Architecture              | Flat hierarchy with context fields          | Idiomatic Java, plays well with catch blocks, self-documenting                 |
-| Boilerplate               | Lombok `@Getter`; hand-written constructors | Lombok can't delegate to `super()`, so constructors are manual                 |
+| Boilerplate               | Lombok `@Getter`; handwritten constructors  | Lombok can't delegate to `super()`, so constructors are manual                 |
 
 ## Exception Hierarchy
 
-```
+```text
 MontonioException (base, extends RuntimeException)
 ├── MontonioApiException            — API returned a non-success response
 ├── MontonioNetworkException        — connection/timeout failure
