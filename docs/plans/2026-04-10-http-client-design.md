@@ -103,7 +103,7 @@ private MontonioApiException buildApiException(int statusCode, String responseBo
 }
 ```
 
-If the body is not JSON or lacks the expected fields, falls back to raw body as `errorMessage`. Never throws — always produces a usable exception.
+If the body is not valid JSON, falls back to raw body as `errorMessage`. If the JSON parses but lacks the expected fields, null is returned for those fields. Never throws — always produces a usable exception.
 
 Field names (`errorCode`, `message`) may need adjustment once validated against the real Montonio API.
 

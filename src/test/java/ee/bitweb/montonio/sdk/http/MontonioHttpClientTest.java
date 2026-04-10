@@ -103,6 +103,7 @@ class MontonioHttpClientTest {
 
         assertEquals("created", response.name);
         assertEquals(99, response.value);
+        assertEquals("{\"data\":\"hello\"}", extractRequestBody(stubClient.capturedRequest));
     }
 
     @Test
@@ -221,6 +222,25 @@ class MontonioHttpClientTest {
         assertEquals(422, exception.getStatusCode());
         assertNull(exception.getErrorCode());
         assertNull(exception.getErrorMessage());
+    }
+
+    // --- Helpers ---
+
+    private static String extractRequestBody(HttpRequest request) {
+        return request.bodyPublisher()
+                .map(publisher -> {
+                    var subscriber = HttpResponse.BodySubscribers.ofString(java.nio.charset.StandardCharsets.UTF_8);
+                    publisher.subscribe(new java.util.concurrent.Flow.Subscriber<>() {
+                        @Override public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
+                            subscriber.onSubscribe(subscription);
+                        }
+                        @Override public void onNext(java.nio.ByteBuffer item) { subscriber.onNext(List.of(item)); }
+                        @Override public void onError(Throwable throwable) { subscriber.onError(throwable); }
+                        @Override public void onComplete() { subscriber.onComplete(); }
+                    });
+                    return subscriber.getBody().toCompletableFuture().join();
+                })
+                .orElse("");
     }
 
     // --- Test DTOs ---
