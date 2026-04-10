@@ -1,17 +1,1 @@
-# Default owners for everything in the repo
-* @BitWeb/montonio-sdk-maintainers
-
-# Core SDK source and tests
-/src/main/ @BitWeb/montonio-sdk-maintainers
-/src/test/ @BitWeb/montonio-sdk-maintainers
-
-# Build and infrastructure
-build.gradle @BitWeb/montonio-sdk-maintainers
-*.gradle @BitWeb/montonio-sdk-maintainers
-settings.gradle @BitWeb/montonio-sdk-maintainers
-
-# CI/CD and GitHub configuration
-/.github/ @BitWeb/montonio-sdk-maintainers
-
-# AI tooling configuration
-CLAUDE.md @BitWeb/montonio-sdk-maintainers
+* @BitWeb/tech
