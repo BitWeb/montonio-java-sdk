@@ -2,6 +2,13 @@ apply plugin: 'jacoco'
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
 
 tasks.register('unitTest', Test) {
