@@ -60,7 +60,7 @@ Map the issue to one or more areas of the SDK:
 
 Output the triage in this format:
 
-```
+```markdown
 ## Triage Summary
 
 **Type:** <type>

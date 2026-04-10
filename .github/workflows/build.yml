@@ -6,6 +6,12 @@ on:
     branches: [ main ]
 
 jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DavidAnson/markdownlint-cli2-action@v19
+
   test:
     runs-on: ubuntu-latest
     strategy:

@@ -26,7 +26,7 @@ A devcontainer configuration is provided in `.devcontainer/devcontainer.json`. I
 ## Skills
 
 - `/brainstorming` — Collaborative design session for new features, API coverage, or SDK improvements. Asks questions one at a time, proposes approaches with trade-offs, then outputs a design document to `docs/plans/`.
-- `/issue-triage` — Classify, prioritize, and label a GitHub issue. Pass an issue number (e.g. `/issue-triage 12`) to get a structured triage summary with type, priority, affected code areas, and suggested labels.
+- `/issue-triage` — Classify, prioritize, and label a GitHub issue. Pass an issue number or URL (e.g. `/issue-triage 12`), or run without an argument to triage recent untriaged issues; returns a structured summary with type, priority, affected code areas, and suggested labels.
 
 ## Gradle Structure
 
