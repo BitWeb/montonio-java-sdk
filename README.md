@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=BitWeb_montonio-java-sdk&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=BitWeb_montonio-java-sdk)
+
 # Montonio Java SDK
 
 A type-safe Java client for the [Montonio](https://montonio.com) payment gateway REST API (V2 + Stargate). Covers payment order lifecycle, payment method discovery, and JWT webhook/return validation.

@@ -9,6 +9,7 @@ plugins {
     id "org.owasp.dependencycheck" version "12.2.0"
     id "io.freefair.lombok" version "9.2.0"
     id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+    id "org.sonarqube" version "7.2.3.7755"
 }
 
 group 'ee.bitweb'
@@ -31,8 +32,19 @@ repositories {
 dependencies {
     implementation 'tools.jackson.core:jackson-databind:3.0.1'
     implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    implementation 'com.auth0:java-jwt:4.5.0'
 
     testImplementation platform('org.junit:junit-bom:5.14.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "BitWeb_montonio-java-sdk"
+        property "sonar.organization", "bitweb-oss"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.coverage.jacoco.xmlReportPaths",
+                "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml"
+    }
 }
