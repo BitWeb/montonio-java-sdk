@@ -23,6 +23,11 @@ Requires Java 17 (managed via `.sdkmanrc`). Uses Gradle 9.4.1 with Groovy DSL.
 
 A devcontainer configuration is provided in `.devcontainer/devcontainer.json`. It includes Java 17 (Temurin), Gradle (via wrapper), and GitHub CLI. Open the project in any devcontainer-compatible tool (VS Code, IntelliJ, GitHub Codespaces, Claude Code) to get a ready-to-use environment.
 
+## Skills
+
+- `/brainstorming` — Collaborative design session for new features, API coverage, or SDK improvements. Asks questions one at a time, proposes approaches with trade-offs, then outputs a design document to `docs/plans/`.
+- `/issue-triage` — Classify, prioritize, and label a GitHub issue. Pass an issue number or URL (e.g. `/issue-triage 12`), or run without an argument to triage recent untriaged issues; returns a structured summary with type, priority, affected code areas, and suggested labels.
+
 ## Gradle Structure
 
 Build is split across files following BitWeb conventions:
