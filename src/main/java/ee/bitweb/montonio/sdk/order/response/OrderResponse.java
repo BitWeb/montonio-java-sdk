@@ -26,8 +26,12 @@ public final class OrderResponse {
     private final Currency currency;
     private final PaymentMethodType paymentMethodType;
     private final String storeUuid;
+    @Nullable
     private final List<PaymentIntent> paymentIntents;
+
+    @Nullable
     private final List<LineItem> lineItems;
+
     private final Address billingAddress;
     private final Address shippingAddress;
     private final String expiresAt;

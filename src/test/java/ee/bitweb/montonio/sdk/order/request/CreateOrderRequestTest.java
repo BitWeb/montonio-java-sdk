@@ -206,6 +206,40 @@ class CreateOrderRequestTest {
     }
 
     @Test
+    void buildWithZeroGrandTotalThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> CreateOrderRequest.builder()
+                        .merchantReference("order-123")
+                        .returnUrl("https://example.com/return")
+                        .notificationUrl("https://example.com/notify")
+                        .grandTotal(BigDecimal.ZERO)
+                        .currency(Currency.EUR)
+                        .payment(validPayment())
+                        .build()
+        );
+
+        assertEquals("grandTotal", exception.getField());
+    }
+
+    @Test
+    void buildWithNegativeGrandTotalThrows() {
+        MontonioValidationException exception = assertThrows(
+                MontonioValidationException.class,
+                () -> CreateOrderRequest.builder()
+                        .merchantReference("order-123")
+                        .returnUrl("https://example.com/return")
+                        .notificationUrl("https://example.com/notify")
+                        .grandTotal(new BigDecimal("-1"))
+                        .currency(Currency.EUR)
+                        .payment(validPayment())
+                        .build()
+        );
+
+        assertEquals("grandTotal", exception.getField());
+    }
+
+    @Test
     void buildWithNullCurrencyThrows() {
         MontonioValidationException exception = assertThrows(
                 MontonioValidationException.class,

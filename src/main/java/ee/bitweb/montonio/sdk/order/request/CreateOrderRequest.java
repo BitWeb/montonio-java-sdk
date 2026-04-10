@@ -62,6 +62,9 @@ public class CreateOrderRequest {
         if (grandTotal == null) {
             throw new MontonioValidationException("grandTotal", "must not be null");
         }
+        if (grandTotal.signum() <= 0) {
+            throw new MontonioValidationException("grandTotal", "must be greater than zero");
+        }
         if (currency == null) {
             throw new MontonioValidationException("currency", "must not be null");
         }

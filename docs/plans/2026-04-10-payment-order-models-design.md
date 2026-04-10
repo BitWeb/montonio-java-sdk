@@ -80,7 +80,7 @@ deserialization complexity for no real gain — the fields don't conflict.
 
 `OrderResponse` in the TypeScript client includes `refunds`, `availableForRefund`, and
 `isRefundableType`. Refund-related fields are mostly omitted (only `isRefundableType`
-is included) pending a future refund models issue. Jackson ignores unknown fields.
+is included) pending follow-up issue #30 for refund models. Jackson ignores unknown fields.
 
 ## File Inventory
 
