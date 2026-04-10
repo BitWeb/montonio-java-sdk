@@ -26,7 +26,7 @@ No new models — reuses `OrderResponse`, `PaymentIntent`, `PaymentStatus`, and 
 
 ### Dependency Flow
 
-```
+```text
 MontonioClient → MontonioHttpClient → HttpClient (java.net)
        ↓
   OrderService (receives MontonioHttpClient)

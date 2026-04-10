@@ -80,6 +80,19 @@ class OrderServiceTest {
     }
 
     @Test
+    void getTrimsUuidBeforeBuildingPath() {
+        StubHttpClient stubClient = new StubHttpClient(200, fullOrderJson("PAID", "paymentInitiation"));
+        OrderService service = createServiceWithStub(stubClient);
+
+        service.get("  order-uuid  ");
+
+        assertEquals(
+                URI.create(BASE_URL + "/orders/order-uuid"),
+                stubClient.capturedRequest.uri()
+        );
+    }
+
+    @Test
     void getWithNullUuidThrowsValidationException() {
         OrderService service = createServiceWithStub(200, "{}");
 

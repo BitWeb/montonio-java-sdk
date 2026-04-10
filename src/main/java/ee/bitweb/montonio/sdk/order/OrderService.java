@@ -13,9 +13,13 @@ public class OrderService {
     }
 
     public OrderResponse get(String uuid) {
-        if (uuid == null || uuid.isBlank()) {
+        if (uuid == null) {
             throw new MontonioValidationException("uuid", "must not be null or blank");
         }
-        return httpClient.get("/orders/" + uuid, OrderResponse.class);
+        String trimmedUuid = uuid.trim();
+        if (trimmedUuid.isEmpty()) {
+            throw new MontonioValidationException("uuid", "must not be null or blank");
+        }
+        return httpClient.get("/orders/" + trimmedUuid, OrderResponse.class);
     }
 }

@@ -6,7 +6,7 @@ import ee.bitweb.montonio.sdk.order.OrderService;
 public class MontonioClient {
 
     private final MontonioHttpClient httpClient;
-    private OrderService orderService;
+    private volatile OrderService orderService;
 
     public MontonioClient(MontonioSdkConfiguration configuration) {
         if (configuration == null) {
@@ -20,9 +20,16 @@ public class MontonioClient {
     }
 
     public OrderService orders() {
-        if (orderService == null) {
-            orderService = new OrderService(httpClient);
+        OrderService local = orderService;
+        if (local == null) {
+            synchronized (this) {
+                local = orderService;
+                if (local == null) {
+                    local = new OrderService(httpClient);
+                    orderService = local;
+                }
+            }
         }
-        return orderService;
+        return local;
     }
 }
